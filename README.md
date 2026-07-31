@@ -21,6 +21,20 @@ npm run dev
 npm run check
 ```
 
+## Cloudflare deployment
+
+The frontend and API are deployed separately:
+
+1. Create a D1 database named `vct-sim` and replace the placeholder database ID in
+   `apps/worker/wrangler.jsonc`.
+2. Apply migrations with `npm run db:migrate:remote -w @vct-sim/worker`.
+3. Deploy the API with `npm run deploy -w @vct-sim/worker`.
+4. Create a Pages project from this repository using `npm run build -w @vct-sim/web`
+   and `apps/web/dist` as its output directory.
+5. Set `VITE_API_BASE` on Pages to the deployed Worker URL.
+
+The production Cron Trigger runs at 18:00 UTC (03:00 JST) once per day.
+
 ## Data and attribution
 
 Tournament data is sourced from
@@ -30,4 +44,3 @@ owners' rights.
 
 This project is not affiliated with or sponsored by Riot Games, VALORANT Esports,
 or Liquipedia.
-
