@@ -1,4 +1,9 @@
-import type { EventPayload, EventSnapshot, SimulationResult } from "@vct-sim/shared";
+import {
+  rankGroup,
+  type EventPayload,
+  type EventSnapshot,
+  type SimulationResult
+} from "@vct-sim/shared";
 
 export async function contentHash(snapshot: EventSnapshot): Promise<string> {
   const stableInput = JSON.stringify({
@@ -77,9 +82,19 @@ export async function latestPayload(
     .bind(eventId)
     .first<{ snapshot: string; simulation: string }>();
   if (!row) return null;
+  const snapshot = JSON.parse(row.snapshot) as EventSnapshot;
   return {
-    ...(JSON.parse(row.snapshot) as EventSnapshot),
-    simulation: JSON.parse(row.simulation) as SimulationResult
+    ...snapshot,
+    simulation: JSON.parse(row.simulation) as SimulationResult,
+    standings: {
+      alpha: rankGroup(
+        snapshot.teams.filter((team) => team.group === "alpha"),
+        snapshot.matches.filter((match) => match.group === "alpha")
+      ),
+      omega: rankGroup(
+        snapshot.teams.filter((team) => team.group === "omega"),
+        snapshot.matches.filter((match) => match.group === "omega")
+      )
+    }
   };
 }
-

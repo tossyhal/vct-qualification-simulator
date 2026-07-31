@@ -62,5 +62,5 @@ export interface EventSnapshot {
 
 export interface EventPayload extends EventSnapshot {
   simulation: SimulationResult;
+  standings: Record<GroupId, Standing[]>;
 }
-
