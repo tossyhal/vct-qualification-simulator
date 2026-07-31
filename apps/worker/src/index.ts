@@ -20,7 +20,7 @@ app.use(
   })
 );
 
-app.get("/api/health", (context) =>
+app.get("/healthz", (context) =>
   context.json({ status: "ok", eventId: EVENT_ID })
 );
 
@@ -34,7 +34,7 @@ app.get("/api/events/:eventId", async (context) => {
   return context.json(payload);
 });
 
-app.post("/internal/run", async (context) => {
+app.post("/api/admin/run", async (context) => {
   const expected = context.env.ADMIN_TOKEN;
   if (!expected || context.req.header("Authorization") !== `Bearer ${expected}`) {
     return context.json({ error: "Unauthorized" }, 401);
@@ -52,4 +52,3 @@ export default {
     context.waitUntil(runDailyUpdate(env.DB));
   }
 };
-
