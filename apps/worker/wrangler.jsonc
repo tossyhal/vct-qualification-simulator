@@ -13,9 +13,8 @@
     {
       "binding": "DB",
       "database_name": "vct-sim",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "ca145f1f-367e-4ca6-a08a-1d9bed644075",
       "migrations_dir": "migrations"
     }
   ]
 }
-
