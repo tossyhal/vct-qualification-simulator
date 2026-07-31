@@ -1,0 +1,29 @@
+{
+  "name": "vct-qualification-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @vct-sim/web",
+    "build": "npm run build -w @vct-sim/shared && npm run build -w @vct-sim/worker && npm run build -w @vct-sim/web",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "lint": "oxlint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260731.1",
+    "@types/node": "^24.1.0",
+    "oxlint": "^1.76.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
