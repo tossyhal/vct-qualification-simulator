@@ -6,6 +6,7 @@ import type {
   TeamProbability
 } from "@vct-sim/shared";
 import { useEffect, useState } from "react";
+import { PrototypeApp } from "./prototype/PrototypeApp";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 const EVENT_ID = "vct-2026-pacific-stage-2";
@@ -123,6 +124,14 @@ function Loading() {
 }
 
 export function App() {
+  // PROTOTYPE — #8の情報構造比較。採用案を決めたら削除する。
+  if (new URLSearchParams(window.location.search).has("variant")) {
+    return <PrototypeApp />;
+  }
+  return <RealApp />;
+}
+
+function RealApp() {
   const [payload, setPayload] = useState<EventPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [group, setGroup] = useState<GroupId>("alpha");
