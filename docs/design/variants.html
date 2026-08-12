@@ -1,0 +1,380 @@
+<title>VCT Qualification Simulator — 視覚案</title>
+<style>
+  :root {
+    color-scheme: light;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    background: #d9d4cd;
+    color: #171717;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { overflow-x: hidden; }
+  button { font: inherit; }
+  button:focus-visible { outline: 3px solid #2f65f5; outline-offset: 2px; }
+
+  .controlbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: center;
+    padding: 12px max(12px, calc((100vw - 1120px) / 2));
+    background: #f7f5f2;
+    border-bottom: 1px solid #beb8af;
+  }
+  .control-group { display: flex; gap: 4px; align-items: center; }
+  .control-label { margin-right: 5px; font-size: 12px; font-weight: 700; color: #68635d; }
+  .controlbar button {
+    cursor: pointer;
+    padding: 5px 9px;
+    border: 1px solid #b9b2aa;
+    background: transparent;
+    color: #302d2a;
+    font-size: 12px;
+  }
+  .controlbar button:hover { background: #e8e3dd; }
+  .controlbar button[aria-pressed="true"] { background: #26221f; color: #fff; border-color: #26221f; }
+  .hint { margin-left: auto; font-size: 11px; color: #77716a; }
+
+  .stage { padding: 22px 12px 70px; }
+  .canvas {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    padding: 28px clamp(12px, 3vw, 36px) 52px;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .canvas.mobile { width: 375px; max-width: 100%; margin-left: auto; margin-right: auto; }
+
+  .masthead { display: flex; justify-content: space-between; gap: 22px; align-items: end; padding-bottom: 19px; border-bottom: 2px solid var(--strong); }
+  .masthead h1 { max-width: 720px; margin: 0; font-size: clamp(24px, 5vw, 54px); line-height: .96; letter-spacing: -.055em; color: var(--strong); }
+  .masthead p { max-width: 240px; margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+  .masthead .serial { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 800; letter-spacing: .16em; color: var(--accent); }
+  .summary { display: flex; flex-wrap: wrap; gap: 7px 20px; align-items: baseline; padding: 12px 0 20px; color: var(--muted); font-size: 12px; }
+  .summary strong { color: var(--strong); font-size: 14px; }
+  .summary em { font-style: normal; color: var(--accent); font-weight: 800; }
+
+  .route-guide { display: grid; grid-template-columns: 1fr 1fr 2fr 2fr; gap: 5px; margin-bottom: 24px; }
+  .route-guide span { display: block; min-height: 40px; padding: 7px 8px; border-top: 3px solid var(--route); background: var(--guide); color: var(--muted); font-size: 11px; line-height: 1.25; }
+  .route-guide b { display: block; margin-bottom: 3px; color: var(--strong); font-size: 12px; }
+  .group { margin-top: 22px; }
+  .group-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .group-head h2 { margin: 0; color: var(--strong); font-size: 17px; letter-spacing: .02em; }
+  .group-head p { margin: 0; color: var(--muted); font-size: 11px; }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
+  col.team-col { width: 30%; }
+  col.direct-col { width: 11%; }
+  col.pos-col { width: 9.8333%; }
+  th, td { min-width: 0; }
+  thead th { padding: 7px 3px; color: var(--muted); text-align: right; font-size: 10px; font-weight: 800; line-height: 1.15; }
+  thead th:first-child { text-align: left; }
+  thead tr:first-child th { border-bottom: 1px solid var(--rule); color: var(--accent); }
+  thead .destination { font-size: 9px; text-align: center; }
+  thead .destination small { display: block; color: var(--muted); font-size: 9px; font-weight: 500; }
+  tbody th, tbody td { padding: 9px 3px; border-bottom: 1px solid var(--rule); text-align: right; vertical-align: middle; }
+  tbody th { text-align: left; font-weight: 400; }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+  .team-cell { display: grid; grid-template-columns: 18px minmax(0, 1fr); column-gap: 5px; align-items: baseline; }
+  .rank { color: var(--muted); font-size: 11px; font-weight: 700; }
+  .short { display: inline-block; color: var(--strong); font-size: 14px; font-weight: 900; letter-spacing: -.02em; }
+  .formal { display: block; overflow: hidden; color: var(--muted); font-size: 9px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+  .record { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; line-height: 1.15; }
+  .prob { display: flex; min-height: 31px; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; }
+  .value { display: block; color: var(--accent); font-size: 12px; font-weight: 800; line-height: 1; }
+  .direct .value { color: var(--strong); font-size: 14px; }
+  .meter { display: block; width: max(8px, var(--p)); height: 4px; background: var(--accent); }
+  .value.zero { color: var(--zero); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .meter.zero { width: 12px; height: 0; border-top: 1px dashed var(--zero); background: none; }
+  .footnote { margin: 19px 0 0; padding-top: 11px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+  /* 1. Paper / editorial */
+  .v1 { --bg: #f3eee5; --ink: #27231f; --strong: #30231e; --muted: #766b60; --rule: #d2c6b8; --guide: #e8dfd2; --accent: #c54b32; --route: #d48755; --zero: #9f958c; }
+  .v1 .masthead h1 { font-family: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 500; letter-spacing: -.06em; }
+  .v1 .masthead { border-bottom-width: 1px; }
+  .v1 .summary { border-bottom: 1px solid var(--rule); }
+  .v1 .group-head h2 { font-family: Georgia, "Hiragino Mincho ProN", serif; font-weight: 500; }
+  .v1 tbody tr:nth-child(1) .short { color: var(--accent); }
+  .v1 .meter { height: 3px; }
+
+  /* 2. Dark sports desk */
+  .v2 { --bg: #202326; --ink: #e7e2d9; --strong: #fff8e8; --muted: #a6aaa8; --rule: #42484b; --guide: #2b3033; --accent: #ef6a50; --route: #6fdbbe; --zero: #73797a; }
+  .v2 .masthead { border-bottom-color: var(--accent); }
+  .v2 .masthead h1, .v2 .group-head h2 { text-transform: uppercase; letter-spacing: .02em; }
+  .v2 .route-guide span { background: transparent; border-top-width: 1px; }
+  .v2 .short { letter-spacing: .05em; }
+  .v2 .direct { background: #2b3033; }
+  .v2 tbody tr:nth-child(1) { background: #292d30; }
+  .v2 .meter { height: 6px; border-radius: 0; }
+
+  /* 3. Lavender research notebook */
+  .v3 { --bg: #eeeaf8; --ink: #2d2938; --strong: #34204d; --muted: #716a80; --rule: #d2c9e4; --guide: #e3dcf1; --accent: #7356d9; --route: #31a9a0; --zero: #aaa3b4; }
+  .v3 .masthead { display: block; text-align: center; border-bottom: 0; }
+  .v3 .masthead h1 { max-width: none; font-size: clamp(30px, 6vw, 61px); letter-spacing: -.08em; }
+  .v3 .masthead p { max-width: 480px; margin: 11px auto 0; }
+  .v3 .masthead .serial { margin-bottom: 10px; }
+  .v3 .summary { justify-content: center; border-bottom: 1px solid var(--rule); }
+  .v3 .route-guide { margin-top: 7px; }
+  .v3 .route-guide span { border-top: 0; border-bottom: 3px solid var(--route); text-align: center; }
+  .v3 .group { border-top: 2px solid var(--strong); padding-top: 9px; }
+  .v3 .group-head h2 { font-size: 14px; letter-spacing: .15em; text-transform: uppercase; }
+  .v3 tbody th, .v3 tbody td { border-bottom-color: var(--rule); }
+  .v3 .meter { height: 7px; border-radius: 4px; }
+
+  /* 4. Blackboard / data lab */
+  .v4 { --bg: #111312; --ink: #dddfd4; --strong: #f4f5e7; --muted: #8e968d; --rule: #343a35; --guide: #1b201d; --accent: #b9e33e; --route: #ed5c9d; --zero: #626961; }
+  .v4, .v4 table, .v4 .controlbar { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Noto Sans JP", monospace; }
+  .v4 .masthead { border-bottom: 1px solid var(--accent); }
+  .v4 .masthead h1 { letter-spacing: -.07em; }
+  .v4 .route-guide span { background: transparent; border: 1px solid var(--rule); border-top: 2px solid var(--route); }
+  .v4 .group-head h2 { color: var(--accent); font-size: 14px; }
+  .v4 .short { color: var(--accent); }
+  .v4 .meter { height: 3px; }
+  .v4 .direct { border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+
+  /* 5. White / scoreboard */
+  .v5 { --bg: #ffffff; --ink: #161d2b; --strong: #0a2c73; --muted: #617087; --rule: #d7dee8; --guide: #eef2f7; --accent: #e24434; --route: #205ec6; --zero: #a9b2bd; }
+  .v5 .masthead { border-bottom: 4px solid var(--strong); }
+  .v5 .masthead h1 { font-weight: 850; letter-spacing: -.07em; }
+  .v5 .masthead p { text-align: right; }
+  .v5 .route-guide span { border-top-width: 5px; }
+  .v5 .group-head { padding-bottom: 4px; border-bottom: 1px solid var(--strong); }
+  .v5 .group-head h2 { color: var(--strong); font-size: 19px; }
+  .v5 .direct { background: #f3f5f8; }
+  .v5 .meter { height: 5px; }
+
+  /* 6. Mint / field notes */
+  .v6 { --bg: #e9f1e8; --ink: #1e3027; --strong: #15543b; --muted: #668071; --rule: #bfd3c3; --guide: #dce8dc; --accent: #eb633f; --route: #2d8864; --zero: #9aaca0; }
+  .v6 .masthead { border-bottom: 0; padding-bottom: 7px; }
+  .v6 .masthead h1 { font-weight: 650; letter-spacing: -.065em; }
+  .v6 .masthead p { border-left: 2px solid var(--accent); padding-left: 11px; }
+  .v6 .summary { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .v6 .route-guide { margin-top: 22px; }
+  .v6 .route-guide span { border-top: 4px solid var(--route); }
+  .v6 .group { border: 1px solid var(--rule); padding: 12px 12px 6px; }
+  .v6 .group-head h2 { font-weight: 750; }
+  .v6 .meter { height: 8px; border-radius: 4px; }
+
+  /* 7. Plum / high-contrast culture magazine */
+  .v7 { --bg: #382438; --ink: #f5e9d7; --strong: #fff7e6; --muted: #c8adbd; --rule: #65465f; --guide: #482c47; --accent: #d5f24b; --route: #f194c1; --zero: #8d7187; }
+  .v7 .masthead { border-bottom: 1px solid var(--strong); }
+  .v7 .masthead h1 { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif; font-weight: 950; text-transform: uppercase; letter-spacing: -.09em; }
+  .v7 .masthead p { color: var(--muted); }
+  .v7 .summary { border-bottom: 1px solid var(--rule); }
+  .v7 .route-guide span { border-top: 0; border-bottom: 1px solid var(--route); background: var(--guide); }
+  .v7 .group-head h2 { font-size: 22px; }
+  .v7 tbody tr:nth-child(odd) { background: #412941; }
+  .v7 .short, .v7 .value { color: var(--accent); }
+  .v7 .meter { height: 5px; }
+
+  /* 8. Red / black tabloid */
+  .v8 { --bg: #f8f7f3; --ink: #101010; --strong: #101010; --muted: #5c5b57; --rule: #101010; --guide: #e9e7e0; --accent: #d9182b; --route: #101010; --zero: #a7a59d; }
+  .v8 .masthead { display: block; border-bottom: 8px solid var(--strong); }
+  .v8 .masthead h1 { max-width: none; font-size: clamp(36px, 8vw, 88px); font-weight: 950; text-transform: uppercase; letter-spacing: -.11em; }
+  .v8 .masthead p { max-width: 470px; margin-top: 16px; }
+  .v8 .masthead .serial { margin-top: 10px; margin-bottom: 0; color: var(--strong); }
+  .v8 .summary { padding: 15px 0 17px; }
+  .v8 .route-guide { gap: 0; border-top: 3px solid var(--strong); border-bottom: 3px solid var(--strong); }
+  .v8 .route-guide span { border-top: 0; border-right: 1px solid var(--strong); background: transparent; }
+  .v8 .route-guide span:last-child { border-right: 0; }
+  .v8 .group { border-top: 7px solid var(--strong); }
+  .v8 .group-head h2 { font-size: 23px; font-weight: 950; text-transform: uppercase; }
+  .v8 thead th { border-bottom: 3px solid var(--strong); }
+  .v8 thead tr:first-child th { border-bottom: 1px solid var(--strong); }
+  .v8 tbody th, .v8 tbody td { border-bottom: 1px solid var(--strong); }
+  .v8 .direct { background: #edeae2; }
+  .v8 .meter { height: 9px; }
+
+  @media (max-width: 620px) {
+    .controlbar { padding: 9px 8px; gap: 6px 10px; }
+    .hint { width: 100%; margin-left: 0; }
+    .stage { padding: 12px 0 40px; }
+    .canvas { padding: 20px 8px 38px; }
+    .masthead { gap: 12px; }
+    .masthead h1 { font-size: 28px; }
+    .masthead p { max-width: 145px; font-size: 10px; }
+    .summary { gap: 4px 10px; padding-bottom: 14px; font-size: 10px; }
+    .summary strong { font-size: 12px; }
+    .route-guide { gap: 2px; margin-bottom: 18px; }
+    .route-guide span { min-height: 48px; padding: 5px 4px; font-size: 8px; }
+    .route-guide b { font-size: 10px; }
+    .group { margin-top: 17px; }
+    .group-head { margin-bottom: 5px; }
+    .group-head h2 { font-size: 14px; }
+    .group-head p { font-size: 9px; }
+    thead th { padding: 5px 1px; font-size: 8px; }
+    thead .destination { font-size: 7px; }
+    thead .destination small { font-size: 7px; }
+    tbody th, tbody td { padding: 7px 1px; }
+    .team-cell { grid-template-columns: 13px minmax(0, 1fr); column-gap: 3px; }
+    .rank { font-size: 9px; }
+    .short { font-size: 11px; }
+    .formal, .record { font-size: 7px; }
+    .prob { min-height: 26px; gap: 3px; }
+    .value { font-size: 9px; }
+    .direct .value { font-size: 10px; }
+    .meter { height: 3px; }
+    .footnote { font-size: 9px; }
+  }
+</style>
+
+<div class="controlbar" aria-label="視覚案の切り替え">
+  <div class="control-group">
+    <span class="control-label">視覚案</span>
+    <button type="button" data-variant="1" aria-pressed="true">1</button>
+    <button type="button" data-variant="2" aria-pressed="false">2</button>
+    <button type="button" data-variant="3" aria-pressed="false">3</button>
+    <button type="button" data-variant="4" aria-pressed="false">4</button>
+    <button type="button" data-variant="5" aria-pressed="false">5</button>
+    <button type="button" data-variant="6" aria-pressed="false">6</button>
+    <button type="button" data-variant="7" aria-pressed="false">7</button>
+    <button type="button" data-variant="8" aria-pressed="false">8</button>
+  </div>
+  <div class="control-group">
+    <span class="control-label">幅</span>
+    <button type="button" data-width="mobile" aria-pressed="true">375px</button>
+    <button type="button" data-width="full" aria-pressed="false">全幅</button>
+  </div>
+  <span class="hint">案の切替: ← →</span>
+</div>
+
+<main class="stage">
+  <section class="canvas mobile v1" id="canvas" data-variant="1" aria-live="polite"></section>
+</main>
+
+<script>
+  const teams = [
+    { id: "full-sense", name: "FULL SENSE", shortName: "FS" },
+    { id: "global-esports", name: "Global Esports", shortName: "GE" },
+    { id: "rex-regum-qeon", name: "Rex Regum Qeon", shortName: "RRQ" },
+    { id: "nongshim-redforce", name: "Nongshim RedForce", shortName: "NS" },
+    { id: "zeta-division", name: "ZETA DIVISION", shortName: "ZETA" },
+    { id: "gen-g", name: "Gen.G", shortName: "GEN" },
+    { id: "paper-rex", name: "Paper Rex", shortName: "PRX" },
+    { id: "t1", name: "T1", shortName: "T1" },
+    { id: "kiwoom-drx", name: "KIWOOM DRX", shortName: "KRX" },
+    { id: "detonation-focusme", name: "DetonatioN FocusMe", shortName: "DFM" },
+    { id: "team-secret", name: "Team Secret", shortName: "TS" },
+    { id: "varrel", name: "VARREL", shortName: "VL" }
+  ];
+
+  const standings = {
+    alpha: [
+      ["gen-g", 4, 0], ["global-esports", 2, 2], ["zeta-division", 2, 1],
+      ["full-sense", 1, 2], ["nongshim-redforce", 1, 2], ["rex-regum-qeon", 0, 3]
+    ],
+    omega: [
+      ["paper-rex", 3, 1], ["varrel", 2, 1], ["t1", 2, 1],
+      ["team-secret", 1, 3], ["kiwoom-drx", 1, 2], ["detonation-focusme", 1, 2]
+    ]
+  };
+
+  const probabilities = {
+    "full-sense": { direct: 0, positions: [0, 0, 0.15929, 0.31026, 0.3418, 0.18865] },
+    "global-esports": { direct: 0.40694, positions: [0, 0.40694, 0.34217, 0.15616, 0.09473, 0] },
+    "rex-regum-qeon": { direct: 0, positions: [0, 0, 0.00186, 0.23823, 0.26045, 0.49946] },
+    "nongshim-redforce": { direct: 0.21813, positions: [0, 0.21813, 0.07152, 0.16041, 0.23805, 0.31189] },
+    "zeta-division": { direct: 0.37493, positions: [0, 0.37493, 0.42516, 0.13494, 0.06497, 0] },
+    "gen-g": { direct: 1, positions: [1, 0, 0, 0, 0, 0] },
+    "paper-rex": { direct: 0.65605, positions: [0.4278, 0.22825, 0.24976, 0.09419, 0, 0] },
+    "t1": { direct: 0.40584, positions: [0.18809, 0.21775, 0.28328, 0.085, 0.16408, 0.0618] },
+    "kiwoom-drx": { direct: 0.24101, positions: [0.06298, 0.17803, 0.0412, 0.31, 0.21967, 0.18812] },
+    "detonation-focusme": { direct: 0.12566, positions: [0.03121, 0.09445, 0.15488, 0.13439, 0.28001, 0.30506] },
+    "team-secret": { direct: 0, positions: [0, 0, 0.12331, 0.25196, 0.20987, 0.41486] },
+    "varrel": { direct: 0.57144, positions: [0.28992, 0.28152, 0.14757, 0.12446, 0.12637, 0.03016] }
+  };
+
+  const variantNotes = {
+    1: ["紙面のスポーツ特集。余白と明朝見出しで、確率を記事の主役にする。", "生成り＋朱色＋焦げ茶"],
+    2: ["夜の試合結果を見るための、硬質なスポーツデスク。直通列を強く置く。", "チャコール＋珊瑚＋ミント"],
+    3: ["研究ノートのように、確率分布を静かに比較する。中央揃えと丸いバー。", "薄紫＋紫＋青緑"],
+    4: ["データラボの黒板。等幅数字と細い罫線で、数値の検証感を出す。", "黒＋ライム＋マゼンタ"],
+    5: ["白いスコアボード。赤い確率バーと青い見出しで、試合後の一覧性を優先。", "白＋コバルト＋朱赤"],
+    6: ["フィールドノートの穏やかな案。グループごとに紙片のように区切る。", "ミント＋深緑＋柿色"],
+    7: ["カルチャー誌の大胆な見開き。強い文字組みで、応援チームを探しやすくする。", "プラム＋クリーム＋ライム"],
+    8: ["新聞の速報面。太い黒罫と赤い数値で、順位の差を一目で伝える。", "白＋黒＋真紅"]
+  };
+
+  const teamById = new Map(teams.map((team) => [team.id, team]));
+  const canvas = document.querySelector("#canvas");
+  let activeVariant = 1;
+
+  const destinations = [
+    ["1位", "準決勝へbye"], ["2位", "Playoffs UB 1回戦"],
+    ["3–4位", "Play-In UB 2回戦"], ["5–6位", "Play-In UB 1回戦"]
+  ];
+
+  function percent(value) {
+    if (value === 0) return "0";
+    if (value === 1) return "100";
+    if (value < 0.005) return "<1";
+    return String(Math.round(value * 100));
+  }
+
+  function probabilityCell(value, direct) {
+    const zero = value === 0;
+    const width = zero ? 0 : Math.max(8, Math.round(value * 100));
+    return `<td class="${direct ? "direct" : ""}"><div class="prob"><span class="value${zero ? " zero" : ""}">${percent(value)}<span class="sr-only">%</span></span><span class="meter${zero ? " zero" : ""}" style="--p:${width}%"></span></div></td>`;
+  }
+
+  function teamRow(entry, index) {
+    const [id, wins, losses] = entry;
+    const team = teamById.get(id);
+    const values = probabilities[id];
+    return `<tr>
+      <th scope="row"><div class="team-cell"><span class="rank">${index + 1}</span><span><span class="short">${team.shortName}</span><span class="formal">${team.name}</span><span class="record">${wins}–${losses}</span></span></div></th>
+      ${probabilityCell(values.direct, true)}
+      ${values.positions.map((value) => probabilityCell(value, false)).join("")}
+    </tr>`;
+  }
+
+  function table(group) {
+    return `<section class="group" aria-labelledby="${group}-title">
+      <div class="group-head"><h2 id="${group}-title">${group === "alpha" ? "GROUP ALPHA" : "GROUP OMEGA"}</h2><p>順位別の着地確率</p></div>
+      <table>
+        <caption class="sr-only">${group}の順位別確率</caption>
+        <colgroup><col class="team-col"><col class="direct-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"></colgroup>
+        <thead><tr><th scope="col">TEAM</th><th scope="col">直通<small>1+2</small></th><th class="destination" scope="colgroup" colspan="1">bye<small>1位</small></th><th class="destination" scope="colgroup" colspan="1">PO1<small>2位</small></th><th class="destination" scope="colgroup" colspan="2">PI2<small>3–4位</small></th><th class="destination" scope="colgroup" colspan="2">PI1<small>5–6位</small></th></tr><tr><th scope="col">現在順位・成績</th><th scope="col">%</th>${[1, 2, 3, 4, 5, 6].map((position) => `<th scope="col">${position}位</th>`).join("")}</tr></thead>
+        <tbody>${standings[group].map(teamRow).join("")}</tbody>
+      </table>
+    </section>`;
+  }
+
+  function render() {
+    const [goal, palette] = variantNotes[activeVariant];
+    canvas.className = `canvas mobile v${activeVariant}`;
+    canvas.dataset.variant = String(activeVariant);
+    canvas.innerHTML = `<header class="masthead"><div><span class="serial">OPTION ${activeVariant} / 08</span><h1>VCT<br>QUALIFICATION</h1></div><p>${goal}</p></header>
+      <div class="summary"><strong>2026 PACIFIC · STAGE 2</strong><span>Monte Carlo <em>100,000</em> trials</span><span>${palette}</span></div>
+      <div class="route-guide">${destinations.map(([rank, label]) => `<span><b>${rank}</b>${label}</span>`).join("")}</div>
+      ${table("alpha")}${table("omega")}
+      <p class="footnote">直通 = 1位 + 2位。バーの長さが確率の大きさを示し、取り得ない順位の0は打消し線で区別しています。残り試合は一律50%として計算。</p>`;
+    document.querySelectorAll("[data-variant]").forEach((button) => {
+      button.setAttribute("aria-pressed", button.dataset.variant === String(activeVariant) ? "true" : "false");
+    });
+  }
+
+  document.querySelectorAll("[data-variant]").forEach((button) => button.addEventListener("click", () => {
+    activeVariant = Number(button.dataset.variant);
+    render();
+  }));
+  document.querySelectorAll("[data-width]").forEach((button) => button.addEventListener("click", () => {
+    canvas.classList.toggle("mobile", button.dataset.width === "mobile");
+    document.querySelectorAll("[data-width]").forEach((item) => item.setAttribute("aria-pressed", item === button ? "true" : "false"));
+  }));
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    activeVariant = event.key === "ArrowRight" ? (activeVariant % 8) + 1 : (activeVariant + 6) % 8 + 1;
+    render();
+  });
+
+  const srStyle = document.createElement("style");
+  srStyle.textContent = ".sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}";
+  document.head.appendChild(srStyle);
+  render();
+</script>
