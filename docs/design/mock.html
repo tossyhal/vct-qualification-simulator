@@ -138,7 +138,110 @@
   .font-credit { margin: 17px 0 0; color: var(--muted); font-size: 10px; line-height: 1.3; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
+  .masthead-title { min-width: 0; overflow: hidden; }
+  .page-nav { display: flex; flex: 0 0 auto; gap: 2px; align-self: stretch; align-items: flex-start; }
+  .page-link {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .page-link:hover { color: var(--strong); }
+  .page-link[aria-current="page"] { color: var(--strong); }
+  .page-link.mock-link::after { content: "（仮）"; font-size: 9px; font-weight: 700; }
+
+  .about-page, .admin-page { padding-top: 20px; }
+  .reading-column { max-width: 70ch; }
+  .reading-column h2, .admin-page h2 {
+    margin: 0;
+    padding-bottom: 9px;
+    border-bottom: 2px solid var(--strong);
+    color: var(--strong);
+    font-size: 24px;
+    letter-spacing: -.025em;
+    line-height: 1.2;
+  }
+  .about-section { padding-top: 22px; }
+  .reading-column > .about-section:first-child { padding-top: 0; }
+  .about-section + .about-section { margin-top: 24px; border-top: 1px solid var(--rule); }
+  .about-section h3, .admin-page h3 {
+    margin: 0 0 10px;
+    color: var(--strong);
+    font-size: 18px;
+    line-height: 1.3;
+  }
+  .about-section p { margin: 0; font-size: 16px; line-height: 1.8; }
+  .placement-list { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 0; margin: 0; font-size: 16px; line-height: 1.8; }
+  .placement-list dt, .placement-list dd { margin: 0; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+  .placement-list dt { color: var(--strong); font-weight: 800; }
+  .tie-list { list-style: none; margin: 0; padding: 0; font-size: 16px; line-height: 1.8; }
+  .tie-list li { display: grid; grid-template-columns: 2em minmax(0, 1fr); }
+  .tie-index { color: var(--strong); font-weight: 800; }
+  .source-note { margin-top: 10px !important; color: var(--muted); font-size: 14px !important; line-height: 1.7 !important; }
+  .source-note a { color: var(--route); font-weight: 700; }
+
+  .admin-heading { display: flex; justify-content: space-between; gap: 18px; align-items: end; }
+  .admin-heading h2 { flex: 1 1 auto; }
+  .mock-note { max-width: 26ch; margin: 0 0 8px; color: var(--muted); font-size: 12px; line-height: 1.45; text-align: right; }
+  .state-switcher { display: flex; flex-wrap: wrap; gap: 0 4px; margin: 18px 0 22px; border-bottom: 1px solid var(--rule); }
+  .state-choice {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 9px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .state-choice:hover, .state-choice[aria-pressed="true"] { color: var(--strong); }
+  .state-choice[aria-pressed="true"] { border-bottom-color: var(--accent); }
+  .admin-block { padding: 22px 0 0; border-top: 1px solid var(--rule); }
+  .admin-block + .admin-block { margin-top: 26px; }
+  .admin-block-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  .admin-block-heading h3 { margin-bottom: 0; }
+  .status-badge { display: inline-flex; min-height: 28px; align-items: center; padding: 4px 8px; border: 1px solid currentColor; font-size: 12px; font-weight: 800; line-height: 1; white-space: nowrap; }
+  .status-badge[data-state="success"] { color: var(--strong); }
+  .status-badge[data-state="unchanged"] { color: var(--muted); }
+  .status-badge[data-state="failure"] { color: var(--alert); }
+  .status-badge[data-state="running"] { color: var(--route); }
+  .admin-summary { max-width: 70ch; margin: 11px 0 18px; color: var(--ink); font-size: 15px; line-height: 1.65; }
+  .admin-summary strong { color: var(--strong); }
+  .metadata-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--rule); }
+  .metadata-grid > div { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: 13px; line-height: 1.4; }
+  .metadata-grid dt { color: var(--muted); }
+  .metadata-grid dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .job-list { margin: 0; padding: 0; list-style: none; }
+  .job-row { padding: 14px 0 16px; border-bottom: 1px solid var(--rule); }
+  .job-row:first-child { border-top: 1px solid var(--rule); }
+  .job-row.current { background: #f3f5f8; }
+  .job-row-header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .job-row-header strong { color: var(--strong); font-size: 14px; }
+  .job-row-header .status-badge { font-size: 11px; }
+  .job-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 10px 0 0; }
+  .job-details > div { display: grid; grid-template-columns: 7em minmax(0, 1fr); gap: 8px; padding: 5px 0; font-size: 12px; line-height: 1.4; }
+  .job-details dt { color: var(--muted); }
+  .job-details dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .error-summary { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--rule); color: var(--alert); font-size: 14px; line-height: 1.6; }
+  .error-summary strong { display: block; margin-bottom: 3px; font-size: 12px; }
+  .next-step { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .manual-update { min-width: 44px; min-height: 44px; padding: 11px 16px; border: 1px solid var(--strong); background: var(--strong); color: #fff; cursor: pointer; font-size: 14px; font-weight: 800; }
+  .manual-update:hover { background: #08235d; }
+  .manual-update:disabled { border-color: var(--rule); background: #e7ebf0; color: #526171; cursor: not-allowed; }
+  .manual-status { min-height: 24px; margin: 11px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
   .v5 { --bg: #ffffff; --ink: #161d2b; --strong: #0a2c73; --muted: #617087; --rule: #d7dee8; --accent: #d43b2d; --route: #205ec6; --zero: #5f6d7d; }
+  .v5 { --alert: #a52e24; }
   .v5 .masthead { border-bottom: 4px solid var(--strong); }
   .v5 .masthead h1 { font-weight: 850; letter-spacing: -.07em; }
 
@@ -157,7 +260,9 @@
     .stage { padding: 12px 0 40px; }
     .canvas { padding: 20px 8px 38px; }
     .masthead { gap: 12px; }
-    .masthead h1 { font-size: 25px; }
+    .masthead h1 { font-size: 22px; white-space: nowrap; }
+    .page-nav { gap: 0; }
+    .page-link { padding-left: 5px; padding-right: 5px; font-size: 11px; }
     .tournament-tabs { gap: 4px 6px; padding-bottom: 14px; }
     .tournament-tab { font-size: 13px; }
     .group { margin-top: 17px; }
@@ -172,6 +277,12 @@
     .prob { min-height: 26px; }
     .value { font-size: 13px; }
     .direct .value { font-size: 14px; }
+    .admin-heading { display: block; }
+    .mock-note { max-width: 70ch; margin: 10px 0 0; text-align: left; }
+    .metadata-grid, .job-details { grid-template-columns: 1fr; }
+    .metadata-grid > div { grid-template-columns: 8.5em minmax(0, 1fr); }
+    .job-row-header { align-items: start; }
+    .about-section p, .placement-list, .tie-list { font-size: 15px; }
   }
 </style>
 
@@ -238,6 +349,53 @@
   let activeTournament = tournaments[0].id;
   let activeGroup = "alpha";
   let mobileWidth = true;
+  const requestedPage = new URLSearchParams(window.location.search).get("page");
+  let activePage = ["board", "about", "admin"].includes(requestedPage) ? requestedPage : "board";
+  let adminState = "success";
+  let manualRun = false;
+  let manualResult = null;
+
+  const adminStateData = {
+    success: {
+      label: "成功",
+      summary: "最新の取得とシミュレーション生成が完了しています。",
+      start: "2026-08-12 06:00:00 JST",
+      end: "2026-08-12 06:00:12 JST",
+      duration: "12.4秒",
+      error: "なし"
+    },
+    unchanged: {
+      label: "変更なし",
+      summary: "取得元を確認しましたが、新しいスナップショットはありません。",
+      start: "2026-08-11 06:00:00 JST",
+      end: "2026-08-11 06:00:04 JST",
+      duration: "4.1秒",
+      error: "なし"
+    },
+    failure: {
+      label: "失敗",
+      summary: "更新ジョブがスナップショットの取得途中で停止しています。",
+      start: "2026-08-10 06:00:00 JST",
+      end: "2026-08-10 06:00:09 JST",
+      duration: "9.0秒",
+      error: "スナップショットの取得に失敗しました。"
+    },
+    running: {
+      label: "実行中",
+      summary: "手動更新を実行しています。完了するまでこの操作は使えません。",
+      start: "2026-08-12 06:15:00 JST",
+      end: "—",
+      duration: "実行中",
+      error: "—"
+    }
+  };
+
+  const adminStateLabels = [
+    ["success", "成功"],
+    ["unchanged", "変更なし"],
+    ["failure", "失敗"],
+    ["running", "実行中"]
+  ];
 
   function percent(value) {
     if (value === 0) return "0";
@@ -290,10 +448,131 @@
     }).join("")}</div></div>`;
   }
 
+  function pageNavigation() {
+    return `<nav class="page-nav" aria-label="ページ">
+      <a class="page-link" data-page-link="about" href="?page=about"${activePage === "about" ? " aria-current=\"page\"" : ""}>説明</a>
+      <a class="page-link mock-link" data-page-link="admin" href="?page=admin"${activePage === "admin" ? " aria-current=\"page\"" : ""}>管理者</a>
+    </nav>`;
+  }
+
+  function masthead() {
+    return `<header class="masthead"><div class="masthead-title"><h1>VCT QUALIFICATION</h1></div>${pageNavigation()}</header>`;
+  }
+
+  function aboutPage() {
+    return `<section class="about-page" aria-labelledby="about-title">
+      <div class="reading-column">
+        <section class="about-section">
+          <h2 id="about-title">この数字が何か</h2>
+          <p>残っている試合の勝敗をすべて五分（50%）と置き、グループの全試合を100,000回くり返し組み立て直したときに、各チームがその順位で終わった割合です。予想ではなく、今の勝敗表から機械的に数えた結果です。</p>
+        </section>
+        <section class="about-section">
+          <h2>順位が決めるもの</h2>
+          <p>このグループステージで敗退するチームはありません。12チーム全員が次へ進み、順位はどこから始めるかだけを決めます。</p>
+          <dl class="placement-list">
+            <dt>1位</dt><dd>Playoffs Upper Bracket 準決勝へ bye</dd>
+            <dt>2位</dt><dd>Playoffs Upper Bracket 1回戦</dd>
+            <dt>3・4位</dt><dd>Play-In Upper Bracket 2回戦</dd>
+            <dt>5・6位</dt><dd>Play-In Upper Bracket 1回戦</dd>
+          </dl>
+        </section>
+        <section class="about-section">
+          <h2>同率のとき</h2>
+          <p>公式規定の順で判定します。3チーム以上が並んだ場合は、上位と判定できたチームを切り離し、残りをひとつの組として最初の基準からやり直します。</p>
+          <ol class="tie-list">
+            <li><span class="tie-index">①</span><span>直接対決の勝敗</span></li>
+            <li><span class="tie-index">②</span><span>直接対決のマップ差</span></li>
+            <li><span class="tie-index">③</span><span>直接対決のラウンド差</span></li>
+            <li><span class="tie-index">④</span><span>マップ差</span></li>
+            <li><span class="tie-index">⑤</span><span>ラウンド差</span></li>
+          </ol>
+        </section>
+        <section class="about-section">
+          <h2>正確でないところ</h2>
+          <p>残り試合を一律50%としているため実力差が反映されません。マップ数とラウンド数の生成も簡略化しており、同率の判定に影響します。分析用途には向きません。</p>
+        </section>
+        <section class="about-section">
+          <h2>出典</h2>
+          <p class="source-note"><a href="https://liquipedia.net/valorant/VCT/2026/Pacific_League/Stage_2" target="_blank" rel="noreferrer">Liquipedia VALORANT Wiki</a>（CC BY-SA 3.0）。Riot Games、VALORANT Esports、Liquipediaとは無関係の非公式サイトです。</p>
+        </section>
+      </div>
+    </section>`;
+  }
+
+  function adminStatusBadge(state) {
+    return `<span class="status-badge" data-state="${state}">${adminStateData[state].label}</span>`;
+  }
+
+  function adminJobRow(state, current = false) {
+    const data = adminStateData[state];
+    return `<li class="job-row${current ? " current" : ""}">
+      <div class="job-row-header"><strong>更新ジョブ</strong>${adminStatusBadge(state)}</div>
+      <dl class="job-details">
+        <div><dt>開始時刻</dt><dd>${data.start}</dd></div>
+        <div><dt>終了時刻</dt><dd>${data.end}</dd></div>
+        <div><dt>実行時間</dt><dd>${data.duration}</dd></div>
+        <div><dt>エラー概要</dt><dd>${data.error}</dd></div>
+      </dl>
+    </li>`;
+  }
+
+  function adminPage() {
+    const data = adminStateData[adminState];
+    const historyStates = [adminState, "success", "unchanged", "failure"].filter((state, index, states) => states.indexOf(state) === index);
+    const updateDisabled = manualRun || adminState === "running";
+    const manualLabel = updateDisabled ? "取り込み中…" : "手動で取り込む";
+    const manualMessage = manualRun
+      ? "実行中です。完了するまで再度実行できません。"
+      : manualResult === "success"
+        ? "実行結果：成功。最新スナップショットとシミュレーションを更新しました。"
+        : manualResult === "unchanged"
+          ? "実行結果：変更なし。公開データはそのままです。"
+          : manualResult === "failure"
+            ? "実行結果：失敗。エラー概要を確認してから再試行してください。"
+            : "実行前に確認を表示します。";
+    return `<section class="admin-page" aria-labelledby="admin-title">
+      <div class="admin-heading"><h2 id="admin-title">管理者ページ</h2><p class="mock-note">モック表示です。本番では別URLの<code>/admin</code>へ置きます。</p></div>
+      <div class="state-switcher" role="group" aria-label="管理者ページの表示状態（モック）">
+        ${adminStateLabels.map(([state, label]) => `<button type="button" class="state-choice" data-admin-state="${state}" aria-pressed="${adminState === state}">${label}</button>`).join("")}
+      </div>
+      <section class="admin-block" aria-labelledby="latest-job-title">
+        <div class="admin-block-heading"><h3 id="latest-job-title">直近の更新</h3>${adminStatusBadge(adminState)}</div>
+        <p class="admin-summary">${data.summary}</p>
+        ${adminState === "failure" ? `<p class="error-summary"><strong>エラー概要</strong>${data.error}</p><p class="next-step">次にすること：取得元の更新を確認し、必要なら手動更新を再実行してください。秘密情報や外部レスポンスは表示しません。</p>` : ""}
+      </section>
+      <section class="admin-block" aria-labelledby="job-history-title">
+        <h3 id="job-history-title">更新ジョブの履歴</h3>
+        <ul class="job-list">${historyStates.map((state, index) => adminJobRow(state, index === 0)).join("")}</ul>
+      </section>
+      <section class="admin-block" aria-labelledby="snapshot-title">
+        <h3 id="snapshot-title">最新スナップショット</h3>
+        <dl class="metadata-grid">
+          <div><dt>取得日時</dt><dd>2026-08-12 06:00:11 JST</dd></div>
+          <div><dt>source revision</dt><dd>2026-08-12-stage2</dd></div>
+          <div><dt>content hash</dt><dd>sha256: 7b2f9c1d…a48e</dd></div>
+        </dl>
+      </section>
+      <section class="admin-block" aria-labelledby="simulation-title">
+        <h3 id="simulation-title">最新シミュレーション</h3>
+        <dl class="metadata-grid">
+          <div><dt>生成日時</dt><dd>2026-08-12 06:00:24 JST</dd></div>
+          <div><dt>seed</dt><dd>pacific-s2-20260812</dd></div>
+          <div><dt>iterations</dt><dd>100,000</dd></div>
+          <div><dt>実行時間</dt><dd>11.8秒</dd></div>
+        </dl>
+      </section>
+      <section class="admin-block" aria-labelledby="manual-title">
+        <h3 id="manual-title">手動更新</h3>
+        <p class="admin-summary">最新データを取得し、変更があればシミュレーションを生成します。実行前に確認を挟みます。</p>
+        <button type="button" class="manual-update" id="manual-update"${updateDisabled ? " disabled" : ""}>${manualLabel}</button>
+        <p class="manual-status" id="manual-status" aria-live="polite">${manualMessage}</p>
+      </section>
+    </section>`;
+  }
+
   function render() {
     canvas.className = `canvas ${mobileWidth ? "mobile" : ""} v5`;
-    canvas.innerHTML = `<header class="masthead"><div><h1>VCT QUALIFICATION</h1></div></header>
-      ${tournamentTabs()}
+    const boardPage = `${tournamentTabs()}
       ${tournaments.map((tournament) => {
         const hidden = tournament.id === activeTournament ? "" : " hidden";
         return `<section id="tournament-panel-${tournament.id}" role="tabpanel" aria-labelledby="tournament-tab-${tournament.id}" tabindex="0"${hidden}>
@@ -301,8 +580,14 @@
         </section>`;
       }).join("")}
       <p class="font-credit">書体: Public Sans（英字・記号）＋ Work Sans（数字） / SIL Open Font License 1.1</p>`;
-    bindTabs("tournament", tournaments.map(({ id }) => id), selectTournament);
-    bindTabs(`${activeTournament}-group`, ["alpha", "omega"], selectGroup);
+    const pageContent = activePage === "about" ? aboutPage() : activePage === "admin" ? adminPage() : boardPage;
+    canvas.innerHTML = `${masthead()}${pageContent}`;
+    bindPageNavigation();
+    if (activePage === "board") {
+      bindTabs("tournament", tournaments.map(({ id }) => id), selectTournament);
+      bindTabs(`${activeTournament}-group`, ["alpha", "omega"], selectGroup);
+    }
+    if (activePage === "admin") bindAdminPage();
   }
 
   function bindTabs(prefix, ids, select) {
@@ -315,6 +600,48 @@
         const direction = event.key === "ArrowRight" ? 1 : -1;
         select(ids[(index + direction + ids.length) % ids.length], true);
       });
+    });
+  }
+
+  function bindPageNavigation() {
+    canvas.querySelectorAll("[data-page-link]").forEach((link) => link.addEventListener("click", (event) => {
+      event.preventDefault();
+      navigatePage(link.dataset.pageLink);
+    }));
+  }
+
+  function navigatePage(page) {
+    activePage = page;
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set("page", page);
+    nextUrl.hash = "";
+    window.history.pushState({}, "", nextUrl);
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function bindAdminPage() {
+    canvas.querySelectorAll("[data-admin-state]").forEach((button) => button.addEventListener("click", () => {
+      adminState = button.dataset.adminState;
+      manualRun = adminState === "running";
+      manualResult = null;
+      render();
+    }));
+    const manualButton = canvas.querySelector("#manual-update");
+    if (!manualButton) return;
+    manualButton.addEventListener("click", () => {
+      if (manualRun || adminState === "running") return;
+      if (!window.confirm("最新データを取り込みます。実行しますか？")) return;
+      manualRun = true;
+      adminState = "running";
+      manualResult = null;
+      render();
+      window.setTimeout(() => {
+        manualRun = false;
+        adminState = "success";
+        manualResult = "success";
+        render();
+      }, 1200);
     });
   }
 
@@ -335,6 +662,12 @@
     canvas.classList.toggle("mobile", mobileWidth);
     document.querySelectorAll("[data-width]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
   }));
+
+  window.addEventListener("popstate", () => {
+    const page = new URLSearchParams(window.location.search).get("page");
+    activePage = ["board", "about", "admin"].includes(page) ? page : "board";
+    render();
+  });
 
   render();
 </script>
