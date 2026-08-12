@@ -53,12 +53,23 @@
   .masthead { display: flex; justify-content: space-between; gap: 22px; align-items: end; padding-bottom: 19px; border-bottom: 2px solid var(--strong); }
   .masthead h1 { max-width: 720px; margin: 0; font-size: clamp(24px, 5vw, 54px); line-height: .96; letter-spacing: -.055em; color: var(--strong); }
   .masthead .serial { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 800; letter-spacing: .16em; color: var(--accent); }
-  .summary { display: flex; flex-wrap: wrap; gap: 7px 20px; align-items: baseline; padding: 12px 0 20px; color: var(--muted); font-size: 12px; }
-  .summary strong { color: var(--strong); font-size: 14px; }
+  .tournament-tabs { display: flex; flex-wrap: wrap; gap: 7px 20px; align-items: baseline; padding: 12px 0 20px; }
+  .content-tab {
+    cursor: pointer;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 800;
+  }
+  .content-tab:hover { color: var(--strong); }
+  .content-tab[aria-selected="true"] { color: var(--strong); }
+  .tournament-tab { font-size: 14px; }
 
   .group { margin-top: 22px; }
   .group-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--strong); }
-  .group-head h2 { margin: 0; color: var(--strong); font-size: 19px; letter-spacing: .02em; }
+  .group-tabs { display: flex; gap: 18px; }
+  .group-tab { font-size: 19px; letter-spacing: .02em; }
 
   table { width: 100%; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
   col.team-col { width: 30%; }
@@ -79,7 +90,7 @@
   .value { display: block; color: var(--accent); font-size: 12px; font-weight: 800; line-height: 1; }
   .direct { background: #f3f5f8; }
   .direct .value { color: var(--strong); font-size: 14px; }
-  .value.zero { color: var(--zero); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .value.zero { color: var(--zero); }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
   .v5 { --bg: #ffffff; --ink: #161d2b; --strong: #0a2c73; --muted: #617087; --rule: #d7dee8; --accent: #e24434; --route: #205ec6; --zero: #a9b2bd; }
@@ -91,12 +102,12 @@
     .stage { padding: 12px 0 40px; }
     .canvas { padding: 20px 8px 38px; }
     .masthead { gap: 12px; }
-    .masthead h1 { font-size: 28px; }
-    .summary { gap: 4px 10px; padding-bottom: 14px; font-size: 10px; }
-    .summary strong { font-size: 12px; }
+    .masthead h1 { font-size: 25px; }
+    .tournament-tabs { gap: 4px 10px; padding-bottom: 14px; }
+    .tournament-tab { font-size: 12px; }
     .group { margin-top: 17px; }
     .group-head { margin-bottom: 5px; }
-    .group-head h2 { font-size: 14px; }
+    .group-tab { font-size: 14px; }
     thead th { padding: 5px 1px; font-size: 8px; }
     tbody th, tbody td { padding: 7px 1px; }
     .team-cell { grid-template-columns: 13px minmax(0, 1fr); column-gap: 3px; }
@@ -110,13 +121,6 @@
 </style>
 
 <div class="controlbar" aria-label="表示設定">
-  <div class="control-group">
-    <span class="control-label">グループ</span>
-    <div role="tablist" aria-label="グループ選択">
-      <button type="button" role="tab" id="tab-alpha" aria-controls="panel-alpha" aria-selected="true" tabindex="0">Alpha</button>
-      <button type="button" role="tab" id="tab-omega" aria-controls="panel-omega" aria-selected="false" tabindex="-1">Omega</button>
-    </div>
-  </div>
   <div class="control-group" aria-label="幅の切り替え">
     <span class="control-label">幅</span>
     <button type="button" data-width="mobile" aria-pressed="true">375px</button>
@@ -129,6 +133,10 @@
 </main>
 
 <script>
+  const tournaments = [
+    { id: "pacific", label: "Pacific" }
+  ];
+
   const teams = [
     { id: "full-sense", name: "FULL SENSE", shortName: "FS" },
     { id: "global-esports", name: "Global Esports", shortName: "GE" },
@@ -172,7 +180,7 @@
 
   const teamById = new Map(teams.map((team) => [team.id, team]));
   const canvas = document.querySelector("#canvas");
-  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  let activeTournament = tournaments[0].id;
   let activeGroup = "alpha";
   let mobileWidth = true;
 
@@ -199,48 +207,72 @@
     </tr>`;
   }
 
-  function table(group) {
-    const title = group === "alpha" ? "GROUP ALPHA" : "GROUP OMEGA";
+  function groupPanel(tournament, group) {
+    const title = group === "alpha" ? "Alpha" : "Omega";
     const hidden = group === activeGroup ? "" : " hidden";
-    return `<section class="group" id="panel-${group}" role="tabpanel" aria-labelledby="tab-${group}" tabindex="0"${hidden}>
-      <div class="group-head"><h2>${title}</h2></div>
+    return `<div id="${tournament}-group-panel-${group}" role="tabpanel" aria-labelledby="${tournament}-group-tab-${group}" tabindex="0"${hidden}>
       <table>
         <caption class="sr-only">${title}の順位別確率</caption>
         <colgroup><col class="team-col"><col class="direct-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"><col class="pos-col"></colgroup>
         <thead><tr><th scope="col">現在順位・成績</th><th scope="col">Playoff</th>${[1, 2, 3, 4, 5, 6].map((position) => `<th scope="col">${position}位</th>`).join("")}</tr></thead>
         <tbody>${standings[group].map(teamRow).join("")}</tbody>
       </table>
-    </section>`;
+    </div>`;
+  }
+
+  function tournamentTabs() {
+    return `<div class="tournament-tabs" role="tablist" aria-label="大会選択">${tournaments.map((tournament) => {
+      const selected = tournament.id === activeTournament;
+      return `<button type="button" class="content-tab tournament-tab" role="tab" id="tournament-tab-${tournament.id}" aria-controls="tournament-panel-${tournament.id}" aria-selected="${selected}" tabindex="${selected ? 0 : -1}">${tournament.label}</button>`;
+    }).join("")}</div>`;
+  }
+
+  function groupTabs(tournament) {
+    return `<div class="group-head"><div class="group-tabs" role="tablist" aria-label="グループ選択">${["alpha", "omega"].map((group) => {
+      const selected = group === activeGroup;
+      const label = group === "alpha" ? "Alpha" : "Omega";
+      return `<button type="button" class="content-tab group-tab" role="tab" id="${tournament}-group-tab-${group}" aria-controls="${tournament}-group-panel-${group}" aria-selected="${selected}" tabindex="${selected ? 0 : -1}">${label}</button>`;
+    }).join("")}</div></div>`;
   }
 
   function render() {
     canvas.className = `canvas ${mobileWidth ? "mobile" : ""} v5`;
-    canvas.innerHTML = `<header class="masthead"><div><h1>VCT<br>QUALIFICATION</h1></div></header>
-      <div class="summary"><strong>2026 PACIFIC · STAGE 2</strong></div>
-      ${table("alpha")}${table("omega")}`;
-    tabs.forEach((tab) => {
-      const selected = tab.id === `tab-${activeGroup}`;
-      tab.setAttribute("aria-selected", String(selected));
-      tab.tabIndex = selected ? 0 : -1;
+    canvas.innerHTML = `<header class="masthead"><div><h1>VCT QUALIFICATION</h1></div></header>
+      ${tournamentTabs()}
+      ${tournaments.map((tournament) => {
+        const hidden = tournament.id === activeTournament ? "" : " hidden";
+        return `<section id="tournament-panel-${tournament.id}" role="tabpanel" aria-labelledby="tournament-tab-${tournament.id}" tabindex="0"${hidden}>
+          <div class="group">${groupTabs(tournament.id)}${groupPanel(tournament.id, "alpha")}${groupPanel(tournament.id, "omega")}</div>
+        </section>`;
+      }).join("")}`;
+    bindTabs("tournament", tournaments.map(({ id }) => id), selectTournament);
+    bindTabs(`${activeTournament}-group`, ["alpha", "omega"], selectGroup);
+  }
+
+  function bindTabs(prefix, ids, select) {
+    const tabs = ids.map((id) => document.querySelector(`#${prefix}-tab-${id}`));
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(ids[index]));
+      tab.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        select(ids[(index + direction + ids.length) % ids.length], true);
+      });
     });
+  }
+
+  function selectTournament(tournament, moveFocus = false) {
+    activeTournament = tournament;
+    render();
+    if (moveFocus) document.querySelector(`#tournament-tab-${tournament}`).focus();
   }
 
   function selectGroup(group, moveFocus = false) {
     activeGroup = group;
     render();
-    if (moveFocus) document.querySelector(`#tab-${group}`).focus();
+    if (moveFocus) document.querySelector(`#${activeTournament}-group-tab-${group}`).focus();
   }
-
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => selectGroup(tab.id.replace("tab-", "")));
-    tab.addEventListener("keydown", (event) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-      event.preventDefault();
-      const direction = event.key === "ArrowRight" ? 1 : -1;
-      const next = tabs[(index + direction + tabs.length) % tabs.length];
-      selectGroup(next.id.replace("tab-", ""), true);
-    });
-  });
 
   document.querySelectorAll("[data-width]").forEach((button) => button.addEventListener("click", () => {
     mobileWidth = button.dataset.width === "mobile";
